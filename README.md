@@ -43,6 +43,8 @@ Nginx Proxy Manager と Portainer を Docker Compose で構成した、リバー
 - **データ永続化**: 設定と SSL 証明書をホストにマウントして永続化
 - **Portainer 統合**: Docker コンテナの監視・管理（NPM 経由でアクセス）
 - **IPv6 無効化**: IPv4 のみでの動作を保証
+- **自動復帰**: `restart: unless-stopped` により再起動・クラッシュ時にコンテナを自動再開
+- **ヘルスチェック**: NPM コンテナの死活監視（nginx と管理 API の稼働確認）
 - **権限昇格の抑止**: Portainer に `no-new-privileges` を付与、Docker ソケットは読み取り専用でマウント
 
 ## 前提条件
@@ -147,5 +149,10 @@ edge-proxy-stack/
 ├── nginx-proxy-manager-data/   # NPM のデータ（永続化）
 ├── nginx-proxy-manager-ssl/    # SSL 証明書（永続化）
 ├── portainer-data/             # Portainer のデータ（永続化）
+├── LICENSE                     # ライセンス（MIT）
 └── README.md                   # 本ファイル
 ```
+
+## ライセンス
+
+[MIT License](LICENSE) のもとで公開しています。

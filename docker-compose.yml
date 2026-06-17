@@ -10,6 +10,7 @@ services:
   portainer:
     image: portainer/portainer-ce:lts                  # Long Term Support版
     container_name: portainer-ce-prod                  # コンテナ名
+    restart: unless-stopped                            # 手動停止時以外は自動復帰（再起動・クラッシュ時に再開）
     security_opt:
       - no-new-privileges:true                         # 新しい権限の取得を禁止
     volumes:
@@ -20,11 +21,15 @@ services:
     expose:
       - "9000"                                          # 内部ポートのみ公開（Nginx経由でのアクセス想定）
     networks:
-      - nginx-proxy-manager-network    
+      - nginx-proxy-manager-network
+    # NOTE: portainer/portainer-ce は shell や wget/curl を含まない最小イメージのため、
+    #       コンテナ内コマンドによる healthcheck は定義できない。死活監視は restart ポリシーと
+    #       Portainer 自身の UI、もしくは外部監視で補う想定。
 
   nginx-proxy-manager:
     image: 'jc21/nginx-proxy-manager:2.12.6'        # 公式のNginx Proxy Managerイメージ
     container_name: nginx-proxy-manager-prod        # コンテナ名
+    restart: unless-stopped                         # 手動停止時以外は自動復帰（再起動・クラッシュ時に再開）
     ports:
       - '80:80'                                     # 公開HTTPポート - 外部からのHTTPリクエストを受信
       - '443:443'                                   # 公開HTTPSポート - 外部からのHTTPSリクエストを受信
@@ -39,3 +44,10 @@ services:
       - ./nginx-proxy-manager-ssl:/etc/letsencrypt  # SSL証明書をホストにマウント
     networks:
       - nginx-proxy-manager-network                 # 指定されたネットワークに接続
+    healthcheck:
+      # イメージ同梱の死活監視スクリプト（nginx と管理APIの稼働を確認）
+      test: ["CMD", "/usr/bin/check-health"]
+      interval: 30s                                 # チェック間隔
+      timeout: 3s                                   # タイムアウト
+      retries: 3                                    # 連続失敗で unhealthy 判定
+      start_period: 60s                             # 起動直後の猶予時間（初回起動の安定待ち）
