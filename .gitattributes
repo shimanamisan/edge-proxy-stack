@@ -1,0 +1,19 @@
+# 既定: テキストファイルは自動判定し、リポジトリ内・チェックアウト時ともに LF に統一
+# （Linux/Docker 前提のため CRLF を持ち込まない）
+* text=auto eol=lf
+
+# シェルスクリプトは LF 必須（CRLF だと shebang が壊れて実行できない）
+*.sh text eol=lf
+
+# 設定・ドキュメント類も LF に固定
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.md   text eol=lf
+*.env  text eol=lf
+.gitignore     text eol=lf
+.gitattributes text eol=lf
+
+# バイナリ（誤った改行変換を防止）
+*.png binary
+*.jpg binary
+*.ico binary

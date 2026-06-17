@@ -99,7 +99,7 @@ docker compose up -d
 
 2. **Portainer 管理画面**
    - Portainer はホストへ直接公開していないため、NPM でプロキシホストを 1 つ作成してアクセスする
-   - Forward Hostname: `portainer-ce-prod` / Forward Port: `9000`（同一ネットワーク上のコンテナ名で解決）
+   - Forward Hostname: `portainer` / Forward Port: `9000`（同一ネットワーク上のコンテナ名で解決）
    - 初回アクセス時に管理者アカウントの作成を求められる
 
 ## 使用方法
