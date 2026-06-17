@@ -112,7 +112,29 @@ docker compose up -d
    - Scheme: `http` または `https`
    - Forward Hostname/IP: 転送先のホスト名／IP
    - Forward Port: 転送先のポート番号
-3. **SSL 証明書の設定** — "SSL" タブで "Request a new SSL Certificate"（Let's Encrypt）を選択
+3. **SSL 証明書の設定** — "SSL" タブで証明書を設定
+   - 公開ドメインを持つ場合: "Request a new SSL Certificate"（Let's Encrypt）
+   - ローカルドメイン（後述の hosts ファイル運用）の場合: 自己署名証明書をアップロード、または HTTP のみで利用
+
+### ドメインでのアクセス（hosts ファイルでの名前解決）
+
+NPM は **Host ヘッダー（ドメイン名）** を見てプロキシ先を振り分けるため、ブラウザでアクセスするにはドメインが NPM サーバーの IP に解決される必要があります。
+公開 DNS を使わないローカル環境では、クライアント側の **hosts ファイル**にドメインとサーバー IP の対応を記述するのが簡単です。
+
+```
+# Windows: C:\Windows\System32\drivers\etc\hosts
+# macOS / Linux: /etc/hosts
+
+192.168.x.x    app.example.local
+192.168.x.x    portainer.example.local
+```
+
+- `192.168.x.x` は NPM が動作するサーバーの IP（同一マシンなら `127.0.0.1`）
+- 上記ドメインを NPM のプロキシホストの "Domain Names" に設定すると、ブラウザから `http(s)://app.example.local` でアクセスできる
+- ローカルドメインは公開 DNS で検証できないため、HTTPS 化する場合は **自己署名証明書**を使う（Let's Encrypt は公開ドメインが必要）
+
+> 📝 NPM の GUI 設定・自己署名証明書の作成からブラウザへのインポートまでの具体的な手順は、ブログ記事で解説しています:
+> [Nginx Proxy Manager でリバースプロキシを GUI で管理する](https://blog.hn-pgtech.com/2025-09-28/)
 
 ### ポート一覧
 
@@ -152,6 +174,10 @@ edge-proxy-stack/
 ├── LICENSE                     # ライセンス（MIT）
 └── README.md                   # 本ファイル
 ```
+
+## 参考リンク
+
+- [Nginx Proxy Manager でリバースプロキシを GUI で管理する](https://blog.hn-pgtech.com/2025-09-28/) — 本構成の使い方（GUI 設定・hosts ファイル運用・自己署名証明書）を解説した記事
 
 ## ライセンス
 
