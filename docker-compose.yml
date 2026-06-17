@@ -1,3 +1,7 @@
+# プロジェクト名を固定（クローン先のフォルダ名に依存せず、
+# 自動生成されるコンテナ名の接頭辞を常に edge-proxy-stack にする）
+name: edge-proxy-stack
+
 # 外部ネットワークの定義
 networks:
   nginx-proxy-manager-network:
@@ -9,7 +13,9 @@ services:
 
   portainer:
     image: portainer/portainer-ce:lts                  # Long Term Support版
-    container_name: portainer                          # コンテナ名
+    # container_name は指定せず、Compose の自動命名に委ねる
+    # （edge-proxy-stack-portainer-1。ホスト全体での名前衝突を回避。
+    #  同一ネットワーク上ではサービス名 portainer で名前解決できる）
     restart: unless-stopped                            # 手動停止時以外は自動復帰（再起動・クラッシュ時に再開）
     security_opt:
       - no-new-privileges:true                         # 新しい権限の取得を禁止
@@ -28,7 +34,7 @@ services:
 
   nginx-proxy-manager:
     image: 'jc21/nginx-proxy-manager:2.12.6'        # 公式のNginx Proxy Managerイメージ
-    container_name: nginx-proxy-manager             # コンテナ名
+    # container_name は指定せず、Compose の自動命名に委ねる（edge-proxy-stack-nginx-proxy-manager-1）
     restart: unless-stopped                         # 手動停止時以外は自動復帰（再起動・クラッシュ時に再開）
     ports:
       - '80:80'                                     # 公開HTTPポート - 外部からのHTTPリクエストを受信
